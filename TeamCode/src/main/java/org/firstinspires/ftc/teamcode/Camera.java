@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import org.firstinspires.ftc.teamcode.vision.UltiamteGoalDeterminationPipeline;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
@@ -17,36 +13,23 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.opencv.core.Mat;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvPipeline;
-
 @Autonomous
 public class Camera extends LinearOpMode
 {
     OpenCvInternalCamera phoneCam;
-    UltiamteGoalDeterminationPipeline pipeline;
+    UltimateGoalDeterminationPipeline pipeline;
 
     //private Servo claw, flicker, holder;
 
-    @Override
-    public void runOpMode() {
+    public void optimizeCamera() {
         //initialize phones
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        pipeline = new UltiamteGoalDeterminationPipeline();
+        pipeline = new UltimateGoalDeterminationPipeline();
         phoneCam.setPipeline(pipeline);
 
         phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
@@ -72,7 +55,12 @@ public class Camera extends LinearOpMode
         //claw.setPosition(1);
     }
 
-    public static class UltiamteGoalDeterminationPipeline extends OpenCvPipeline{
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+    }
+
+    public static class UltimateGoalDeterminationPipeline extends OpenCvPipeline{
 
         public enum RingPosition{
             FOUR,
@@ -88,8 +76,8 @@ public class Camera extends LinearOpMode
         static final int REGION_WIDTH = 35;
         static final int REGION_HEIGHT = 25;
 
-        final int FOUR_RING_THRESHOLD = 150;
-        final int ONE_RING_THRESHOLD = 135;
+        final int FOUR_RING_THRESHOLD = 180;
+        final int ONE_RING_THRESHOLD = 140;
 
         Point region1_pointA = new Point(
                 REGION1_TOPLEFT_ANCHOR_POINT.x,
