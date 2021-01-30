@@ -27,7 +27,7 @@ public class TeleOP extends OpMode {
     private BNO055IMU imu;
     private ElapsedTime runtime;
     private double servo;
-    double shooterPower = .39;
+    double shooterPower = .80;
     boolean shotMode = false;
     ElapsedTime timer = new ElapsedTime();
     boolean servoMoving = false;
@@ -53,7 +53,7 @@ public class TeleOP extends OpMode {
 
         //Initializing all new motors (shooter, arm, intake, transfer)
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         transfer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -138,11 +138,11 @@ public class TeleOP extends OpMode {
         //Reset the intake and transfer encoders
         precisionMode(); //check for precision mode
         armTravel(); // move arm
+        powerShot(); // toggles speed mode for flywheel
         revShoot(); // controls flywheel
         toggleIntake(); // controls intake, on off backwards
         toggleClaw(); // toggles claw
         flickRing(); // toggles flicker
-        powerShot(); // toggles speed mode for flywheel
         toggleHolder(); // toggles intake clip
 
 
@@ -160,11 +160,11 @@ public class TeleOP extends OpMode {
     }
 
     public void powerShot(){ // lowers flywheel speed
-        if(gamepad1.right_bumper && !shotMode && checkRB()){
-            shooterPower = .45;
+        if(gamepad1.dpad_left && !shotMode){
+            shooterPower = .80;
             shotMode = true;
-        } else if(gamepad1.right_bumper && checkRB()){
-            shooterPower = .45;
+        } else if(gamepad1.dpad_right && shotMode){
+            shooterPower = .75;
             shotMode = false;
         }
     }

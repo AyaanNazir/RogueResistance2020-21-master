@@ -30,7 +30,6 @@ public class AutoMain extends LinearOpMode {
     private Servo claw, flicker, holder;
     private DcMotorEx[] motors;
     private final double TPI = 33.5625;
-    private ElapsedTime shooterTime;
     OpenCvInternalCamera phoneCam;
     AutoMain.UltimateGoalDeterminationPipeline pipeline;
     private int distance;
@@ -38,14 +37,22 @@ public class AutoMain extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException  { //Load Zone B
         initialize();
+        moveBot(1,1,2,2,60, .6, true);
+        moveBot(2,1,1,2,-7, .6, true);
+        yeetRing();
+        moveBot(1,1,2,2,15, .6, true);
+        moveBot(2,1,1,2,-9, .6, true);
+        setDownWobbler();
+
+
         //0 Void 1 Forward 2 Reverse
-        moveBot(1,1,2,3,18, .6, true);
-        if(pipeline.getPosition() == UltimateGoalDeterminationPipeline.RingPosition.NONE)
-            moveBot(1,1,2,3,12, .6, true);
-        else if(pipeline.getPosition() == UltimateGoalDeterminationPipeline.RingPosition.ONE)
-            moveBot(1,1,2,3,24, .6, true);
-        else if(pipeline.getPosition() == UltimateGoalDeterminationPipeline.RingPosition.FOUR)
-            moveBot(1,1,2,3,48, .6, true);
+        //moveBot(1,1,2,3,18, .6, true);'
+        //if(pipeline.getPosition() == UltimateGoalDeterminationPipeline.RingPosition.NONE)
+           // moveBot(1,1,2,3,12, .6, true);
+       // else if(pipeline.getPosition() == UltimateGoalDeterminationPipeline.RingPosition.ONE)
+           // moveBot(1,1,2,3,24, .6, true);
+       // else if(pipeline.getPosition() == UltimateGoalDeterminationPipeline.RingPosition.FOUR)
+           // moveBot(1,1,2,3,48, .6, true);
         //moveBot(1, 1, 2, 2, 48, .60, true); //forward
         //yeetRing();
         //moveBot(1, 1, 2, 2, 12, .60, true); //forward
@@ -73,7 +80,8 @@ public class AutoMain extends LinearOpMode {
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         pipeline = new AutoMain.UltimateGoalDeterminationPipeline();
         phoneCam.setPipeline(pipeline);
-
+        claw.setPosition(1);
+        flicker.setPosition(.7);
         phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
 
         phoneCam.openCameraDeviceAsync(() ->{
@@ -165,17 +173,21 @@ public class AutoMain extends LinearOpMode {
     }
 
     public void yeetRing() throws InterruptedException { //NEEDS TO BE REVAMPED TO INCLUDE FLICKER AND PARAMETER FOR RINGS
-        shooter.setPower(1);
-        shooterTime = new ElapsedTime();
+        shooter.setPower(.8);
+        ElapsedTime shooterTime = new ElapsedTime();
+        int flick = 3000;
         //intake.setPower(-.5);
         //transfer.setPower(1);
-        flicker.setPosition(.7);
         while (shooterTime.milliseconds() <= 10000) {
-            if(shooterTime.milliseconds() % 2000 == 0)
-                flicker.setPosition(0);
-            if(shooterTime.milliseconds() % 2000 == 1000)
+            flick = (int)shooterTime.milliseconds() + flick;
+            if(shooterTime.milliseconds() >= 2000)
+                while (shooterTime.milliseconds() <= flick)
+                    flicker.setPosition(0);
+            flick = 850;
+            flick = (int)shooterTime.milliseconds() + flick;
+            while(shooterTime.milliseconds() <= flick)
                 flicker.setPosition(.7);
-            heartbeat();
+            flick = 850;
         }
         flicker.setPosition(.7);
         intake.setPower(0);
@@ -186,13 +198,13 @@ public class AutoMain extends LinearOpMode {
 
     public void setDownWobbler() throws InterruptedException {
         ElapsedTime wobbler = new ElapsedTime();
-        arm.setPower(.8);
-        while(wobbler.milliseconds() <= 500){
+        arm.setPower(-.5);
+        while(wobbler.milliseconds() <= 3000){
             heartbeat();
         }
         claw.setPosition(0);
-        arm.setPower(-.8);
-        while(wobbler.milliseconds() <= 500){
+        arm.setPower(.3);
+        while(wobbler.milliseconds() <= 5000){
             heartbeat();
         }
         arm.setPower(0);
